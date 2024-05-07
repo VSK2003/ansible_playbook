@@ -113,20 +113,29 @@
 
     - name: "Python | Ensure bpytop directory structure exists"
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ ansible_env.HOME }}/.config"
         mode: "0755"
         state: directory
-      loop:
-        - ~/.config
-        - ~/.config/bpytop
-      tags:
-        - linux
+
+    - name: "Python | Ensure bpytop directory exists inside .config"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.config/bpytop"
+        mode: "0755"
+        state: directory
 
     - name: "Python | Copy bpytop config"
       ansible.builtin.copy:
         src: bpytop.conf
-        dest: ~/.config/bpytop/bpytop.conf
+        dest: "{{ ansible_env.HOME }}/.config/bpytop/bpytop.conf"
         mode: "0644"
+
+    - name: "Deactivate Python virtual environment"
+      ansible.builtin.command:
+        cmd: "deactivate"
+      environment:
+        PATH: "{{ ansible_env.PATH }}"
+      become: no  # No need for privilege escalation
+      when: ansible_python.version.major == 3  # Ensure Python 3 is being used
       tags:
         - linux
 
