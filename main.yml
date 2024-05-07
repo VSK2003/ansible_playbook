@@ -78,15 +78,26 @@
       tags:
         - linux
 
-    - name: "Python | Install pip packages"
-      ansible.builtin.pip:
+    # - name: "Python | Install pip packages"
+    #   ansible.builtin.pip:
+    #     name: "{{ item }}"
+    #     state: present
+    #   loop:
+    #     - bpytop
+    #     - shell-gpt==0.9.0
+    #   tags:
+    #     - linux
+    - name: "Python | Install system packages for Debian"
+      ansible.builtin.package:
         name: "{{ item }}"
         state: present
+        cache_valid_time: 3600
       loop:
-        - bpytop
-        - shell-gpt==0.9.0
+        - bpytop  # Install bpytop using system package manager
+      become: yes
       tags:
         - linux
+
 
     - name: "Python | Ensure bpytop directory structure exists"
       ansible.builtin.file:
