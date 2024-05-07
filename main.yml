@@ -87,14 +87,38 @@
     #     - shell-gpt==0.9.0
     #   tags:
     #     - linux
-    - name: "Python | Install system packages for Debian"
+    - name: "Python | Install system packages"
       ansible.builtin.package:
         name: "{{ item }}"
         state: present
-        cache_valid_time: 3600
       loop:
-        - bpytop  # Install bpytop using system package manager
-      become: yes
+        - python3-bpytop  # Install bpytop using system package manager
+      become: yes  # Ensure privilege escalation for installing system packages
+      tags:
+        - linux
+        
+    - name: "Python | Create and activate virtual environment"
+      ansible.builtin.command:
+        cmd: |
+          python3 -m venv /ansible/venv
+          source /ansible/venv/bin/activate
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/ansible/venv/bin"  # Ensure the correct Python interpreter is used
+      args:
+        creates: /ansible/venv  # Check if the virtual environment already exists
+      become: no  # No need for privilege escalation
+      tags:
+        - linux
+
+    - name: "Python | Install pip packages in virtual environment"
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - shell-gpt==0.9.0  # Install shell-gpt in the virtual environment
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/ansible/venv/bin"  # Ensure the correct Python interpreter is used
+      become: no  # No need for privilege escalation
       tags:
         - linux
 
