@@ -87,15 +87,7 @@
     #     - shell-gpt==0.9.0
     #   tags:
     #     - linux
-    - name: "Python | Install system packages"
-      ansible.builtin.apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - python3-bpytop  # Install bpytop using system package manager
-      become: yes  # Ensure privilege escalation for installing system packages
-      tags:
-        - linux
+
 
     - name: "Python | Create and activate virtual environment"
       ansible.builtin.command:
@@ -116,6 +108,7 @@
         state: present
       loop:
         - shell-gpt==0.9.0  # Install shell-gpt in the virtual environment
+        - bpytop
       environment:
         PATH: "{{ ansible_env.PATH }}:/ansible/venv/bin"  # Ensure the correct Python interpreter is used
       become: no  # No need for privilege escalation
