@@ -129,15 +129,15 @@
         dest: "{{ ansible_env.HOME }}/.config/bpytop/bpytop.conf"
         mode: "0644"
 
-    - name: "Deactivate Python virtual environment"
-      ansible.builtin.command:
-        cmd: "deactivate"
-      environment:
-        PATH: "{{ ansible_env.PATH }}"
-      become: no  # No need for privilege escalation
-      when: ansible_python.version.major == 3  # Ensure Python 3 is being used
-      tags:
-        - linux
+    # - name: "Deactivate Python virtual environment"
+    #   ansible.builtin.command:
+    #     cmd: "deactivate"
+    #   environment:
+    #     PATH: "{{ ansible_env.PATH }}"
+    #   become: no  # No need for privilege escalation
+    #   when: ansible_python.version.major == 3  # Ensure Python 3 is being used
+    #   tags:
+    #     - linux
 
 #neovim
     - name: "Neovim | {{ ansible_distribution }} | Dependencies"
