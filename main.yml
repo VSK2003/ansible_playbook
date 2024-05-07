@@ -100,7 +100,7 @@
 
     - name: "Python | Install pip packages in virtual environment"
       ansible.builtin.command:
-        cmd: "/ansible/venv/bin/pip install {{ item }}"
+        cmd: "/ansible/venv/bin/python -m pip install {{ item }}"
         state: present
       loop:
         - shell-gpt==0.9.0  # Install shell-gpt in the virtual environment
