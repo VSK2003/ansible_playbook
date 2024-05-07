@@ -87,17 +87,13 @@
     #     - shell-gpt==0.9.0
     #   tags:
     #     - linux
-
-
     - name: "Python | Create and activate virtual environment"
       ansible.builtin.command:
-        cmd: |
-          python3 -m venv /ansible/venv
-          source /ansible/venv/bin/activate
+        cmd: python3 -m venv /ansible/venv
+      args:
+        creates: /ansible/venv/bin/python
       environment:
         PATH: "{{ ansible_env.PATH }}:/ansible/venv/bin"  # Ensure the correct Python interpreter is used
-      args:
-        creates: /ansible/venv  # Check if the virtual environment already exists
       become: no  # No need for privilege escalation
       tags:
         - linux
@@ -116,7 +112,7 @@
         - linux
 
 
-    - name: "Python | Ensure bpytop directory structure exists"
+       - name: "Python | Ensure bpytop directory structure exists"
       ansible.builtin.file:
         path: "{{ item }}"
         mode: "0755"
