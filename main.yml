@@ -1,0 +1,278 @@
+---
+- name: play
+  hosts: localhost
+  tags: 
+    - linux
+    - minimal-dev
+    - remove
+  tasks:
+  #1password
+    - name: "1Password | Add APT Key"
+      ansible.builtin.apt_key:
+        url: https://downloads.1password.com/linux/keys/1password.asc
+        keyring: /usr/share/keyrings/1password-archive-keyring.gpg
+        state: present
+      become: true
+      tags:
+        - linux
+
+    - name: "1Password | Add APT Repo"
+      ansible.builtin.apt_repository:
+        repo: "deb [arch={{ ansible_machine | replace('x86_64', 'amd64') }} signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/{{ ansible_machine | replace('x86_64', 'amd64') }} stable main"
+        state: present
+        mode: "0644"
+      become: true
+      tags:
+        - linux
+
+    - name: "1Password | Add debsig-verify policy"
+      become: true
+      tags:
+        - linux
+      block:
+        - name: "1Password | Ensure policy directory exists"
+          ansible.builtin.file:
+            name: /etc/debsig/policies/AC2D62742012EA22
+            state: directory
+            mode: "0755"
+      
+    
+        - name: "1Password | Copy debsig-verify policy"
+          ansible.builtin.get_url:
+            url: https://downloads.1password.com/linux/debian/debsig/1password.pol
+            dest: /etc/debsig/policies/AC2D62742012EA22/1password.pol
+            mode: "0644"
+    
+        - name: "1Password | Ensure debsig keyring directory exists"
+          ansible.builtin.file:
+            name: /usr/share/debsig/keyrings/AC2D62742012EA22
+            state: directory
+            mode: "0755"
+    
+        - name: "1Password | Add debsig keyring"
+          ansible.builtin.apt_key:
+            url: https://downloads.1password.com/linux/keys/1password.asc
+            keyring: /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+
+    - name: "1Password | Install 1Password and 1Password CLI"
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      become: true
+      loop:
+        - 1password-cli
+        - 1password
+      tags:
+        - linux
+      
+#python
+    - name: "Python | Install"
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+      become: true
+      tags:
+        - linux
+
+    - name: "Python | Install pip packages"
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - bpytop
+        - shell-gpt==0.9.0
+      tags:
+        - linux
+
+    - name: "Python | Ensure bpytop directory structure exists"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: "0755"
+        state: directory
+      loop:
+        - ~/.config
+        - ~/.config/bpytop
+      tags:
+        - linux
+
+    - name: "Python | Copy bpytop config"
+      ansible.builtin.copy:
+        src: bpytop.conf
+        dest: ~/.config/bpytop/bpytop.conf
+        mode: "0644"
+      tags:
+        - linux
+
+#neovim
+    - name: "Neovim | {{ ansible_distribution }} | Dependencies"
+      ansible.builtin.apt:
+        name:
+          - cmake
+          - curl
+          - pkg-config
+          - libtool
+          - unzip
+          - ansible-lint
+          - ripgrep
+          - lua5.1
+          - luarocks
+          - luajit
+          - neovim
+        state: present
+      become: true
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Neovim | {{ ansible_distribution }} | Install"
+      ansible.builtin.apt_repository:
+        repo: ppa:neovim-ppa/unstable
+        state: present
+      become: true
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Neovim | Config folder"
+      ansible.builtin.file:
+        mode: "0755"
+        path: "{{ ansible_user_dir }}/.config/nvim"
+        state: directory
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Neovim | Create symlink to role files directory"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files"
+        dest: "{{ ansible_user_dir }}/.config/nvim"
+        state: link
+        force: true
+      tags:
+        - linux
+        - minimal-dev
+
+#tmux
+    - name: "Tmux | {{ ansible_distribution }} | Install tmux"
+      ansible.builtin.apt:
+        name: tmux
+        state: present
+      become: true
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Tmux | Install TPM"
+      ansible.builtin.git:
+        repo: https://github.com/tmux-plugins/tpm
+        dest: ~/.tmux/plugins/tpm
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Tmux | Configure tmux"
+      ansible.builtin.copy:
+        src: tmux
+        dest: "{{ ansible_user_dir }}/.config/"
+        mode: "0644"
+        directory_mode: "0755"
+        force: true
+      tags:
+        - linux
+        - minimal-dev
+
+#zsh
+    - name: Install Zsh
+      apt:
+        name: zsh
+        state: present
+      become: true
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Zsh | Detect oh-my-zsh"
+      ansible.builtin.stat:
+        path: "{{ ansible_user_dir }}/.oh-my-zsh"
+      register: ohmyzsh
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Zsh | Install oh-my-zsh if not installed"
+      when: not ohmyzsh.stat.exists
+      tags:
+        - linux
+        - minimal-dev
+      block:
+        - name: "Zsh | Download oh-my-zsh Install Script"
+          ansible.builtin.get_url:
+            url: "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+            dest: "{{ ansible_user_dir }}/oh-my-zsh.install.sh"
+            mode: "0755"
+
+        - name: "Zsh | Run oh-my-zsh Install Script"
+          ansible.builtin.command:
+            cmd: "sh {{ ansible_user_dir }}/oh-my-zsh.install.sh"
+
+    - name: Clone zsh-syntax-highlighting repository
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        depth: 1
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: Add zsh-syntax-highlighting to .zshrc
+      ansible.builtin.lineinfile:
+        dest: "{{ ansible_user_dir }}/.zshrc"
+        line: "source {{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: Clone zsh-autosuggestions repository
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions.git
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        depth: 1
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: Add zsh-autosuggestions to .zshrc
+      ansible.builtin.lineinfile:
+        dest: "{{ ansible_user_dir }}/.zshrc"
+        line: "source {{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+      tags:
+        - linux
+        - minimal-dev
+
+    - name: "Zsh | Update .zshrc for all users"
+      ansible.builtin.copy:
+        src: .zshrc" #
+        dest: "~/.zshrc"
+        mode: "0644"
+      tags:
+        - linux
+        - minimal-dev
+
+#Remove oh-my-zsh
+    - name: Remove Oh My Zsh Install Script
+      ansible.builtin.file:
+        path: /tmp/oh-my-zsh.install.sh
+        state: absent
+      tags:
+        - remove
+
+    - name: Cleanup Oh My Zsh Install Script
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/oh-my-zsh.install.sh"
+        state: absent
+      tags: 
+        - remove
