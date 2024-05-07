@@ -112,7 +112,7 @@
         - linux
 
 
-       - name: "Python | Ensure bpytop directory structure exists"
+    - name: "Python | Ensure bpytop directory structure exists"
       ansible.builtin.file:
         path: "{{ item }}"
         mode: "0755"
