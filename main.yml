@@ -1,10 +1,6 @@
 ---
 - name: play
   hosts: localhost
-  tags: 
-    - linux
-    - minimal-dev
-    - remove
   tasks:
   #1password
     - name: "1Password | Add APT Key"
