@@ -164,13 +164,11 @@
       ansible.builtin.apt:
         name: neovim
         state: present
-        filename: debian-sid
-        update_cache: yes
-      become: true
-      when: ansible_distribution == 'Debian' and ansible_distribution_version == '12'
-      tags:
-        - linux
-        - minimal-dev
+     become: true
+     tags:
+      - linux
+      - minimal-dev
+
 
 
     - name: "Neovim | Config folder"
