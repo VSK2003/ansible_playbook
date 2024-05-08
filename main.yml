@@ -209,7 +209,7 @@
         state: present
       tags:
         - macOS
-        - minimal-dev
+        - minimal-dev-mac
 
     - name: Install Neovim
       homebrew:
@@ -217,7 +217,7 @@
         state: present
       tags:
         - macOS
-        - minimal-dev
+        - minimal-dev-mac
 
       
 #tmux
@@ -255,7 +255,7 @@
         state: present
       tags:
         - macOS
-        - minimal-dev
+        - minimal-dev-mac
 
 #zsh
     - name: Install Zsh
@@ -342,7 +342,7 @@
         - zsh
       tags:
         - macOS
-        - minimal-dev
+        - minimal-dev-mac
 
 #Remove oh-my-zsh
     - name: Remove Oh My Zsh Install Script
