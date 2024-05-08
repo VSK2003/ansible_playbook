@@ -160,16 +160,9 @@
         - linux
         - minimal-dev
 
-<<<<<<< Updated upstream
     - name: Install Neovim on Debian
       ansible.builtin.apt:
         name: neovim
-=======
-   
-    - name: "Neovim | Debian | Install"
-      ansible.builtin.apt_repository:
-        repo: deb http://deb.debian.org/debian sid main
->>>>>>> Stashed changes
         state: present
         filename: debian-sid
         update_cache: yes
