@@ -160,14 +160,15 @@
         - linux
         - minimal-dev
 
-    - name: "Neovim | {{ ansible_distribution }} | Install"
-      ansible.builtin.apt_repository:
-        repo: ppa:neovim-ppa/unstable
+   - name: Install Neovim on Debian
+      ansible.builtin.apt:
+        name: neovim
         state: present
       become: true
       tags:
         - linux
         - minimal-dev
+
 
     - name: "Neovim | Config folder"
       ansible.builtin.file:
