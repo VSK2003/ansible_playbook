@@ -160,7 +160,7 @@
         - linux
         - minimal-dev
 
-   - name: Install Neovim on Debian
+    - name: Install Neovim on Debian
       ansible.builtin.apt:
         name: neovim
         state: present
