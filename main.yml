@@ -379,8 +379,8 @@
         path: "{{ ansible_env.HOME }}/.config/kitty"
         state: directory
         mode: '0755'
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        # owner: "{{ ansible_user }}"
+        # group: "{{ ansible_user }}"
       tags:
         - linux
 
@@ -388,8 +388,8 @@
       ansible.builtin.copy:
         src: kitty.conf
         dest: "{{ ansible_env.HOME }}/.config/kitty/kitty.conf"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        # owner: "{{ ansible_user }}"
+        # group: "{{ ansible_user }}"
         mode: '0644'
       notify: Reload Kitty
       tags:
