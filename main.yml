@@ -289,7 +289,7 @@
 
     - name: "Zsh | Update .zshrc for all users"
       ansible.builtin.copy:
-        src: .zshrc" #
+        src: .zshrc
         dest: "~/.zshrc"
         mode: "0644"
       tags:
