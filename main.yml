@@ -386,7 +386,7 @@
 
     - name: Copy Kitty configuration file
       ansible.builtin.copy:
-        src: kitty.conf
+        src: kitty
         dest: "{{ ansible_env.HOME }}/.config/kitty"
         # owner: "{{ ansible_user }}"
         # group: "{{ ansible_user }}"
