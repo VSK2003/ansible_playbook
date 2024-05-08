@@ -61,6 +61,16 @@
         - 1password
       tags:
         - linux
+
+    - name: Install 1Password and 1Password CLI
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - 1password
+        - 1password-cli
+      tags: 
+        - macOS
       
 #python
     - name: "Python | Install"
@@ -135,6 +145,13 @@
     #   tags:
     #     - linux
 
+    - name: Install Python
+      homebrew:
+        name: python
+        state: present
+      tags: 
+        - macOS
+
 #neovim
     - name: "Neovim | {{ ansible_distribution }} | Dependencies"
       ansible.builtin.apt:
@@ -186,6 +203,23 @@
     #     - linux
     #     - minimal-dev
 
+    - name: Install Lua
+      homebrew:
+        name: lua
+        state: present
+      tags:
+        - macOS
+        - minimal-dev
+
+    - name: Install Neovim
+      homebrew:
+        name: neovim
+        state: present
+      tags:
+        - macOS
+        - minimal-dev
+
+      
 #tmux
     - name: "Tmux | {{ ansible_distribution }} | Install tmux"
       ansible.builtin.apt:
@@ -213,6 +247,14 @@
         force: true
       tags:
         - linux
+        - minimal-dev
+      
+    - name: Install tmux
+      homebrew:
+        name: tmux
+        state: present
+      tags:
+        - macOS
         - minimal-dev
 
 #zsh
@@ -290,6 +332,16 @@
         mode: "0644"
       tags:
         - linux
+        - minimal-dev
+
+    - name: Install ZSH and plugins
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - zsh
+      tags:
+        - macOS
         - minimal-dev
 
 #Remove oh-my-zsh
